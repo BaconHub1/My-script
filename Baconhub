@@ -368,29 +368,6 @@ MS:NewButton("Stop Music","",function()
     end)
 end)
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ToggleUI"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = PlayerGui
-
-local Toggle = Instance.new("TextButton")
-Toggle.Name = "Toggle"
-Toggle.Parent = ScreenGui
-Toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- black background
-Toggle.Position = UDim2.new(0, 10, 0.45, 0)
-Toggle.Size = UDim2.new(0, 140, 0, 40)
-Toggle.Font = Enum.Font.GothamBold
-Toggle.Text = "Close / Open"
-Toggle.TextColor3 = Color3.fromRGB(255, 0, 0) -- red text
-Toggle.TextScaled = true
-Toggle.TextWrapped = true
-Toggle.Draggable = true
-Toggle.Active = true
-
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0, 10)
-Corner.Parent = Toggle
-
 U:NewButton("Click Teleport (Tool)", "", function()
     runWithCountdown(2, function()
         local tool = Instance.new("Tool")
