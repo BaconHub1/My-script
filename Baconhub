@@ -1,96 +1,18 @@
---// Key System (Add This at Top of Your Script)
-local expectedKey = "Free_key818481959104" -- Change this to your actual key
-local grabKeyURL = "https://discord.gg/rCnDMngGJp" -- Change to your grab key link
+-- Blacklist System
+local BlacklistedUserIds = {
+    [8670863056] = true,  -- Replace with real UserIds
+    [987654321] = true,
+    -- Add more like: [UserId] = true,
+}
 
--- Pause script execution until key is nverified
-repeat task.wait() until game:IsLoaded()
-local Player = game:GetService("Players").LocalPlayer
-local TweenService = game:GetService("TweenService")
-local Continue = false
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- GUI Setup
-local gui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
-gui.Name = "KeySystem"
-gui.ResetOnSpawn = false
-
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 360, 0, 200)
-frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
-frame.BorderSizePixel = 0
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 40)
-title.Text = "Enter Key to Unlock"
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.new(1, 1, 1)
-title.TextSize = 20
-
-local keyBox = Instance.new("TextBox", frame)
-keyBox.Size = UDim2.new(0.9, 0, 0, 40)
-keyBox.Position = UDim2.new(0.05, 0, 0.3, 0)
-keyBox.PlaceholderText = "Paste key here"
-keyBox.Font = Enum.Font.Gotham
-keyBox.TextSize = 16
-keyBox.Text = ""
-keyBox.ClearTextOnFocus = false
-keyBox.TextColor3 = Color3.new(1, 1, 1)
-keyBox.BackgroundColor3 = Color3.fromRGB(44, 44, 48)
-Instance.new("UICorner", keyBox).CornerRadius = UDim.new(0, 6)
-
-local grabButton = Instance.new("TextButton", frame)
-grabButton.Size = UDim2.new(0.4, -5, 0, 35)
-grabButton.Position = UDim2.new(0.05, 0, 0.6, 0)
-grabButton.Text = "Grab Key"
-grabButton.Font = Enum.Font.GothamBold
-grabButton.TextColor3 = Color3.new(1, 1, 1)
-grabButton.TextSize = 14
-grabButton.BackgroundColor3 = Color3.fromRGB(72, 72, 255)
-Instance.new("UICorner", grabButton)
-
-local submitButton = Instance.new("TextButton", frame)
-submitButton.Size = UDim2.new(0.4, -5, 0, 35)
-submitButton.Position = UDim2.new(0.55, 0, 0.6, 0)
-submitButton.Text = "Submit"
-submitButton.Font = Enum.Font.GothamBold
-submitButton.TextColor3 = Color3.new(1, 1, 1)
-submitButton.TextSize = 14
-submitButton.BackgroundColor3 = Color3.fromRGB(28, 200, 80)
-Instance.new("UICorner", submitButton)
-
-local message = Instance.new("TextLabel", frame)
-message.Size = UDim2.new(1, -20, 0, 20)
-message.Position = UDim2.new(0, 10, 0.85, 0)
-message.Text = ""
-message.TextColor3 = Color3.fromRGB(255, 80, 80)
-message.BackgroundTransparency = 1
-message.Font = Enum.Font.Gotham
-message.TextSize = 14
-message.TextWrapped = true
-
--- Functions
-grabButton.MouseButton1Click:Connect(function()
-    setclipboard(grabKeyURL)
-    message.Text = "Link copied to clipboard!"
-end)
-
-submitButton.MouseButton1Click:Connect(function()
-    if keyBox.Text == expectedKey then
-        message.Text = "Correct key! Loading..."
-        wait(1)
-        gui:Destroy()
-        Continue = true
-    else
-        message.Text = "Invalid key. Try again."
-    end
-end)
-
--- Wait until correct key is entered
-repeat task.wait() until Continue == true
-
+-- Kick if user is blacklisted
+if BlacklistedUserIds[LocalPlayer.UserId] then
+    LocalPlayer:Kick("You are blacklisted from using this script.")
+    return -- Stops the rest of the script from running
+end
 -- ======= Services =======
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
