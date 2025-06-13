@@ -1,18 +1,4 @@
--- Blacklist System
-local BlacklistedUserIds = {
-    [8670863056] = true,  -- Replace with real UserIds
-    [987654321] = true,
-    -- Add more like: [UserId] = true,
-}
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- Kick if user is blacklisted
-if BlacklistedUserIds[LocalPlayer.UserId] then
-    LocalPlayer:Kick("You are blacklisted from using this script.")
-    return -- Stops the rest of the script from running
-end
 -- ======= Services =======
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
