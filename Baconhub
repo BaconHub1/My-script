@@ -1,3 +1,4 @@
+
 -- ======= Services =======
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
@@ -187,7 +188,7 @@ SU:NewButton("Super S&J","",function()
 end)
 
 -- ======= Troll Tab =======
-local Troll = Window:NewTab("TrollÃ°ÂÂÂ")
+local Troll = Window:NewTab("Troll")
 local TR = Troll:NewSection("FE Troll Tools")
 TR:NewButton("Fling Touch","",function()
     runWithCountdown(2, function()
@@ -366,9 +367,6 @@ MS:NewButton("Stop Music","",function()
         if sInst then sInst:Stop(); sInst:Destroy(); sInst = nil end
     end)
 end)
-local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ToggleUI"
@@ -393,14 +391,40 @@ local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(0, 10)
 Corner.Parent = Toggle
 
--- Click behavior
-Toggle.MouseButton1Click:Connect(function()
-    if Library then
-        Library:ToggleUI()
-    end
+U:NewButton("Click Teleport (Tool)", "", function()
+    runWithCountdown(2, function()
+        local tool = Instance.new("Tool")
+        tool.RequiresHandle = false
+        tool.Name = "ClickTP"
+        tool.Parent = game.Players.LocalPlayer.Backpack
+
+        tool.Activated:Connect(function()
+            local player = game.Players.LocalPlayer
+            local mouse = player:GetMouse()
+            if mouse and mouse.Hit then
+                local character = player.Character or player.CharacterAdded:Wait()
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    -- Teleport
+                    character:MoveTo(mouse.Hit.p)
+
+                    -- Create marker
+                    local marker = Instance.new("Part")
+                    marker.Anchored = true
+                    marker.CanCollide = false
+                    marker.Size = Vector3.new(0.8, 0.8, 0.8)
+                    marker.Shape = Enum.PartType.Ball
+                    marker.Material = Enum.Material.Neon
+                    marker.Color = Color3.fromRGB(255, 0, 0)
+                    marker.Position = mouse.Hit.p + Vector3.new(0, 1, 0)
+                    marker.Parent = workspace
+
+                    -- Auto-remove after a few seconds
+                    game:GetService("Debris"):AddItem(marker, 3)
+                end
+            end
+        end)
+    end)
 end)
-
-
 -- ======= [BaconHub Enhancements] ======= --
 
 -- Console Tab (Script Error Logger)
@@ -473,28 +497,32 @@ local function setupFPSMonitor()
 end
 
 setupFPSMonitor()
+-- ======= Toggle UI Button =======
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "ToggleUI"
+ToggleGui.ResetOnSpawn = false
+ToggleGui.Parent = PlayerGui
 
--- 3D Chat Bubble Notifications
-function showBubbleNotification(text)
-    local char = Player.Character
-    if not char then return end
-    local head = char:FindFirstChild("Head")
-    if not head then return end
+local Toggle = Instance.new("TextButton")
+Toggle.Name = "Toggle"
+Toggle.Parent = ToggleGui
+Toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Toggle.Position = UDim2.new(0, 10, 0.45, 0)
+Toggle.Size = UDim2.new(0, 140, 0, 40)
+Toggle.Font = Enum.Font.GothamBold
+Toggle.Text = "Close / Open"
+Toggle.TextColor3 = Color3.fromRGB(255, 0, 0)
+Toggle.TextScaled = true
+Toggle.TextWrapped = true
+Toggle.Draggable = true
+Toggle.Active = true
 
-    local bubble = Instance.new("BillboardGui", head)
-    bubble.Size = UDim2.new(0, 200, 0, 50)
-    bubble.StudsOffset = Vector3.new(0, 3, 0)
-    bubble.AlwaysOnTop = true
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 10)
+Corner.Parent = Toggle
 
-    local txt = Instance.new("TextLabel", bubble)
-    txt.Text = text
-    txt.Size = UDim2.new(1, 0, 1, 0)
-    txt.BackgroundTransparency = 1
-    txt.TextColor3 = Color3.new(1, 1, 1)
-    txt.TextScaled = true
-
-    game.Debris:AddItem(bubble, 4)
-end
-
--- RGB Glow UI and Smooth Transitions (visual theme stubs)
-log("RGB Glow UI and Smooth Tab Transitions initialized.")
+Toggle.MouseButton1Click:Connect(function()
+    if Library then
+        Library:ToggleUI()
+    end
+end)
