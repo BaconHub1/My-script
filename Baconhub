@@ -1,3 +1,4 @@
+
 -- ======= Services =======
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
@@ -114,7 +115,7 @@ local HttpService = game:GetService("HttpService")
 local Credits = Window:NewTab("Credits")
 local CR = Credits:NewSection("Info")
 CR:NewLabel("This is the official BaconHub.")
-CR:NewLabel("Thanks to Hehehe on Discord.")
+CR:NewLabel("made by darkar & noone on Discord.")
 CR:NewLabel("Thanks for using this script!")
 CR:NewButton("Rejoin Server","",function()
     runWithCountdown(2, function() TeleportService:Teleport(game.PlaceId,Player) end)
@@ -344,6 +345,12 @@ end)
 U:NewButton("console cmd bar", "Opens command bar", function()
     runWithCountdown(2, function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Dhelannn/Test/refs/heads/main/Test1"))()
+    end)
+end)
+
+U:NewButton("💦 Sussy Hub", "Opens the freaky Sussy GUI", function()
+    runWithCountdown(2, function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BaconHub1/Beta-test/refs/heads/main/test"))()
     end)
 end)
 
